@@ -69,6 +69,10 @@ def _parse_compiler_output(stdoutdata):
     sources = output['sources']
 
     for source, data in contracts.items():
+        if("Windows" in platform.system()):
+            drive_path = source.split(':')[0]
+            drive_path + ":\\"+source.split(':')[1].replace("\\", "\\\\")
+
         data['abi'] = json.loads(data['abi'])
         data['ast'] = sources[source.split(':')[0]]['AST']
 
