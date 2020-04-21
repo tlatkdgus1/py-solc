@@ -18,7 +18,7 @@ from .wrapper import (
 )
 
 import semantic_version
-
+import platform
 
 VERSION_DEV_DATE_MANGLER_RE = re.compile(r'(\d{4})\.0?(\d{1,2})\.0?(\d{1,2})')
 strip_zeroes_from_month_and_day = functools.partial(VERSION_DEV_DATE_MANGLER_RE.sub,
@@ -69,12 +69,14 @@ def _parse_compiler_output(stdoutdata):
     sources = output['sources']
 
     for source, data in contracts.items():
-        if("Windows" in platform.system()):
-            drive_path = source.split(':')[0]
-            drive_path + ":\\"+source.split(':')[1].replace("\\", "\\\\")
-
         data['abi'] = json.loads(data['abi'])
-        data['ast'] = sources[source.split(':')[0]]['AST']
+
+        if ("Windows" in platform.system()):
+            split_source = source.split(':')
+            windows_path = split_source[0] + ":" + split_source[1]
+            data['ast'] = sources[windows_path]['AST']
+        else:
+            data['ast'] = sources[source.split(':')[0]]['AST']
 
     return contracts
 
